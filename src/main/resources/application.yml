@@ -1,0 +1,38 @@
+server:
+  port: 9102
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  datasource:
+    name: qms
+    url: jdbc:mysql://192.168.6.151:3306/qms?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    username: chenning
+    password: chenningDB021
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      filter: stat
+      initial-size: 1
+      min-idle: 1
+      max-active: 20
+      max-wait: 86400
+      min-evictable-idle-time-millis: 3
+      time-between-eviction-runs-millis: 60000
+flowable:
+  # Core (Process) FlowableProperties
+  #关闭定时任务JOB
+  async-executor-activate: false
+  # 启用建表策略
+  database-schema-update: true
+  #启用自动部署流程定义
+  check-process-definitions: true
+  # 启用db历史
+  db-history-used: true
+  # 要使用的历史级别。
+  history-level: audit
+  # 自动部署的名称
+  deployment-name: SpringBootAutoDeployment
+  # 自动部署时查找流程的目录
+  process-definition-location-prefix: classpath*:/processes/
+  process-definition-location-suffixes: .bpmn

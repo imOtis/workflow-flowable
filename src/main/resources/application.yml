@@ -1,38 +1,48 @@
 server:
-  port: 9102
-  error:
-    whitelabel:
-      enabled: false
-
+  #è®¾ç½®ç«¯å£
+  port: 8888
+  max-http-header-size: 4096
+  tomcat:
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 1000
+#springé…ç½®
 spring:
+  #æ•°æ®æºé…ç½®
   datasource:
-    name: qms
-    url: jdbc:mysql://192.168.6.151:3306/qms?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.6.151:3306/qms
     username: chenning
     password: chenningDB021
     type: com.alibaba.druid.pool.DruidDataSource
+    #druid è®¾ç½®
     druid:
       filter: stat
+      #åˆå§‹åŒ–å¤§å°
       initial-size: 1
+      #æœ€å°ç­‰å¾…è¿æ¥æ•°é‡
       min-idle: 1
+      #æœ€å¤§è¿æ¥æ•°
       max-active: 20
+      #è¶…æ—¶è®¾ç½®
       max-wait: 86400
-      min-evictable-idle-time-millis: 3
-      time-between-eviction-runs-millis: 60000
 flowable:
-  # Core (Process) FlowableProperties
-  #¹Ø±Õ¶¨Ê±ÈÎÎñJOB
+  # å…³é—­å®šæ—¶ä»»åŠ¡JOB
   async-executor-activate: false
-  # ÆôÓÃ½¨±í²ßÂÔ
-  database-schema-update: true
-  #ÆôÓÃ×Ô¶¯²¿ÊğÁ÷³Ì¶¨Òå
+  # å»ºè¡¨ç­–ç•¥
+  database-schema-update: false
+  # å¯ç”¨è‡ªåŠ¨éƒ¨ç½²æµç¨‹å®šä¹‰
   check-process-definitions: true
-  # ÆôÓÃdbÀúÊ·
+  # å¯ç”¨dbå†å²è¡¨
   db-history-used: true
-  # ÒªÊ¹ÓÃµÄÀúÊ·¼¶±ğ¡£
+  # è¦ä½¿ç”¨çš„å†å²çº§åˆ«ã€‚
   history-level: audit
-  # ×Ô¶¯²¿ÊğµÄÃû³Æ
+  # è‡ªåŠ¨éƒ¨ç½²çš„åç§°
   deployment-name: SpringBootAutoDeployment
-  # ×Ô¶¯²¿ÊğÊ±²éÕÒÁ÷³ÌµÄÄ¿Â¼
+  # è‡ªåŠ¨éƒ¨ç½²æ—¶æŸ¥æ‰¾æµç¨‹çš„ç›®å½•
   process-definition-location-prefix: classpath*:/processes/
-  process-definition-location-suffixes: .bpmn
+#mybatisé…ç½®
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath*:/mapper/*.xml

@@ -45,14 +45,14 @@ public class SwaggerConfig {
         Model model = mavenXpp3Reader.read(new FileReader("pom.xml"));
         return new ApiInfoBuilder()
                 // 页面标题
-                .title("MMF API")
+                .title("Flowable Workflow")
                 // 描述
-                .description("Multi-ModulesFrame API文档")
+                .description("API Document For Flowable Workflow")
                 // 服务条款网址
                 //.termsOfServiceUrl("https://baidu.com")
                 // 创建人
-                .contact(new Contact("Eden Carolus",
-                        "https://gogs.analyticservice.net/shawsail.xiao/Multi-Modules-Frame",
+                .contact(new Contact("ShawSail",
+                        "https://gogs.analyticservice.net/shawsail.xiao/flowable",
                         "ShawSail.Xaio@analyticservice.net"))
                 // 版本号
                 .version(model.getVersion())

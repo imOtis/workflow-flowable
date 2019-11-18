@@ -27,7 +27,7 @@ public class ProDefiDto {
     public ProDefiDto() {
     }
 
-    public ProDefiDto(org.flowable.engine.repository.ProcessDefinition p) {
+    public ProDefiDto(ProcessDefinition p) {
         this();
         getDto(p);
     }
@@ -48,24 +48,4 @@ public class ProDefiDto {
         this.isSuspended = p.isSuspended();
         this.tenantId = p.getTenantId();
     }
-
-    public static ProDefiDto getDto2(ProcessDefinition p) {
-        ProDefiDto proDefiDto = new ProDefiDto();
-        proDefiDto.id = p.getId();
-        proDefiDto.category = p.getCategory();
-        proDefiDto.name = p.getName();
-        proDefiDto.key = p.getKey();
-        proDefiDto.description = p.getDescription();
-        proDefiDto.version = p.getVersion();
-        proDefiDto.resourceName = p.getResourceName();
-        proDefiDto.deploymentId = p.getDeploymentId();
-        proDefiDto.diagramResourceName = p.getDiagramResourceName();
-        proDefiDto.hasStartFormKey = p.hasStartFormKey();
-        proDefiDto.hasGraphicalNotation = p.hasGraphicalNotation();
-        proDefiDto.isSuspended = p.isSuspended();
-        proDefiDto.tenantId = p.getTenantId();
-        return proDefiDto;
-    }
-
-
 }

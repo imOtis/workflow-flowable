@@ -11,7 +11,7 @@ import java.util.Date;
  * @create: 周四 11月 2019
  * @description: 任务 DTO
  */
-public class TaskDto {
+public class ProTaskDto {
     private String id;
     private String name;
     private Date createTime;
@@ -21,10 +21,10 @@ public class TaskDto {
     private String description;
     private String category;
 
-    public TaskDto() {
+    public ProTaskDto() {
     }
 
-    public TaskDto(Task t) {
+    public ProTaskDto(Task t) {
         this();
         getDto(t);
     }

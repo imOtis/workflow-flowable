@@ -1,5 +1,9 @@
 package com.example.flowable.utils;
 
+import com.example.flowable.common.core.dto.ProDefiDto;
+import com.example.flowable.common.core.dto.ProInstDto;
+import com.example.flowable.common.core.dto.ProMoldDto;
+import com.example.flowable.common.core.dto.ProTaskDto;
 import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -12,85 +16,42 @@ import java.util.List;
 /**
  * @author: AAS
  * @create: 周四 11月 2019
- * @description: 对象处理工具类
+ * @description: Object工具类
  */
 public class ObjectUtils {
 
     /**
+     * Flowable 数据转换
      *
-     * @param t DTO实体
-     * @param list Flowable 查询集合
-     * @param <T> DTO实体类型
-     * @param <M> Flowable 集合类型
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    public static  <T,M> List<T> convert2Dto(T t, List<M> list) throws InstantiationException, IllegalAccessException {
-        List<T> result = new ArrayList<>();
-        for (M m : list) {
-            try {
-                //获取指定方法
-                Method declaredMethod = t.getClass().getDeclaredMethod("getDto", m.getClass());
-                declaredMethod.setAccessible(true);
-                T dto = (T) declaredMethod.invoke(t, m);
-                result.add(dto);
-            } catch (NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-    /**
-     *
-     * @param clazz
-     * @param list
+     * @param t    DTO实例
+     * @param list Query集合
      * @param <T>
      * @param <M>
      * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
      */
-    public static  <T,M> List<T> convert2DtoConstruc(Class<T> clazz, List<M> list) throws
-            InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public static <T, M> List<T> convert2Dto(T t, List<M> list) {
         List<T> result = new ArrayList<>();
-        for (M m : list) {
-            // invoke constructor
-            Object object = clazz.getConstructor(m.getClass()).newInstance(m);
-            result.add((T) object);
-        }
-
-
-//        list.forEach(m ->result.add(clazz.newInstance(m)));
-        return result;
-    }
-
-    public static  <T,M> List<T> convert2DtoMethod(Class<T> clazz, List<M> list) throws InstantiationException, IllegalAccessException {
-        List<T> result = new ArrayList<>();
-        for (M m : list) {
-            try {
-                Method method = clazz.getMethod("getDto", m.getClass());
-                Object res = method.invoke(clazz.newInstance(), m);
-                result.add((T) res);
-            } catch (NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
+        if (t instanceof ProDefiDto) {
+            list.forEach(value -> result.add((T) new ProDefiDto((ProcessDefinition) value)));
+        } else if (t instanceof ProInstDto) {
+            list.forEach(value -> result.add((T) new ProInstDto((ProcessInstance) value)));
+        } else if (t instanceof ProMoldDto) {
+            list.forEach(value -> result.add((T) new ProMoldDto((Model) value)));
+        } else {
+            list.forEach(value -> result.add((T) new ProTaskDto((Task) value)));
         }
         return result;
     }
-
 
     /**
      * 判断对象属性是全部为Null
      * 注: 对象属性中任一属性不为null,则返回false,否则返回true
-     * @param
+     *
+     * @param o
      * @return
      * @throws Exception
      */
-    public static boolean isAllNull(Object o) throws Exception{
+    public static boolean isAllNull(Object o) throws Exception {
         boolean result = false;
         Class cls = o.getClass();
         Field[] fields = cls.getDeclaredFields();
@@ -100,7 +61,7 @@ public class ObjectUtils {
             if (val == null) {
                 result = true;
                 continue;
-            }else {
+            } else {
                 result = false;
                 break;
             }

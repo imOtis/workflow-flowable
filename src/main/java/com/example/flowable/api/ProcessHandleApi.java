@@ -3,6 +3,8 @@ package com.example.flowable.api;
 import com.example.flowable.common.core.dto.ProDefiDto;
 import com.example.flowable.utils.ObjectUtils;
 import com.example.flowable.common.core.dto.*;
+import com.example.flowable.common.core.vo.*;
+import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.ApiImplicitParam;
 
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +16,8 @@ import org.flowable.engine.TaskService;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +46,7 @@ public class ProcessHandleApi {
     private RepositoryService repositoryService;
 
 
+    /* 流程部署相关 */
     @ResponseBody
     @ApiOperation(value = "部署流程,")
     @RequestMapping(value = "/deployProcess", method = RequestMethod.POST)
@@ -59,44 +64,51 @@ public class ProcessHandleApi {
         return map;
     }
 
+    /* 流程实例相关 */
     @ResponseBody
-    @ApiOperation(value = "已部署流程列表,")
-    @RequestMapping(value = "/processesList", method = RequestMethod.GET)
-    public List<ProDefiDto> processesList() {
-        List<ProDefiDto> result = new ArrayList<>();
-        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
-                .list();
-        if (list.size() != 0) {
-//                try {
-//                    List<ProDefiDto> result = ObjectUtils.convert2Dto(new ProDefiDto(), list);
-//                    return result;
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-            list.forEach(value -> result.add(new ProDefiDto(value)));
-            return result;
+    @ApiOperation(value = "启动流程,")
+    @RequestMapping(value = "/startProcess", method = RequestMethod.POST)
+    @ApiImplicitParam(name = "classPath", value = "流程图资源路径", required = true, dataType = "String")
+    public ResultVo startProcess(HttpServletRequest request,
+                                             @PathVariable("classPath") String classPath) {
+        //1.DefinitionId
+        String definitionId = "";
+        //2.BusinessKey
+        String businessKey = "";
+        //3.Variables
+        Map<String,Object> variables = new HashMap<>();
+        //4.Start
+        runtimeService.startProcessInstanceById(definitionId,businessKey,variables);
+        //5.validate the process isRun?
+        Task task = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).singleResult();
+        if (task != null){
+            return new ResultVo(CodeEnums.START_SUCCESS);
         }
-        return null;
+        return new ResultVo(CodeEnums.START_ERROR);
     }
 
+
+    /* 流程任务相关 */
     @ResponseBody
-    @ApiOperation(value = "流程查询(带模糊查询),")
-    @RequestMapping(value = "/process/{processName}", method = RequestMethod.GET)
-    @ApiImplicitParam(name = "processName", value = "流程名称", required = true, dataType = "String")
-    public List<ProDefiDto> processesDetail(@PathVariable("processName") String processName) {
-        if (StringUtils.isNotBlank(processName)) {
-            List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionNameLike(processName).list();
-            if (list.size() != 0) {
-                try {
-                    List<ProDefiDto> result = ObjectUtils.convert2DtoConstruc(ProDefiDto.class, list);
-                    return result;
-                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
+    @ApiOperation(value = "处理任务,")
+    @RequestMapping(value = "/dealWithTask", method = RequestMethod.POST)
+    @ApiImplicitParam(name = "taskId", value = "任务ID", required = true, dataType = "String")
+    public ResultVo dealWithTask(HttpServletRequest request,
+                                   @PathVariable("taskId") String taskId) {
+        //1.UserID
+        String assignee = "";
+        //2.Variables
+        Map<String,Object> variables = new HashMap<>();
+        //3.Claim
+        taskService.claim(taskId,assignee);
+        //4.Complete
+        taskService.complete(taskId,variables);
+        //5.Assignee is consistent for the task current node
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        if (assignee.equals(task.getAssignee())){
+            return new ResultVo(CodeEnums.START_SUCCESS);
         }
-        return null;
+        return new ResultVo(CodeEnums.START_ERROR);
     }
 
 }
